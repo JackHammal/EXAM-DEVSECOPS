@@ -12,34 +12,35 @@ jobs:
 
     env:
       IMAGE_NAME: exam-devsecops:ci
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-    - name: Setup Python 3.11
+      - name: Setup Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
-    
-    - name: Run unit tests
-      run: pytest test_app.py
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
 
-    - name: Build Docker image
-      run: docker build -t $IMAGE_NAME .
+      - name: Run unit tests
+        run: pytest test_app.py
 
-    - name: Install Trivy
-      run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
-    - name: Scan Docker image
-      run: trivy image --exit-code 1 --severity CRITICAL,HIGH $IMAGE_NAME
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
 
-    - name: Check Ghost-24 vulnerability
-      run: |
-        trivy image --vuln-type os,library --severity CRITICAL $IMAGE_NAME | grep "Ghost-24" || echo "Ghost-24 not found"
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+
+      - name: Scan Docker image
+        run: trivy image --exit-code 1 --severity CRITICAL,HIGH $IMAGE_NAME
+
+      - name: Check Ghost-24 vulnerability
+        run: |
+          trivy image --vuln-type os,library --severity CRITICAL $IMAGE_NAME | grep "Ghost-24" || echo "Ghost-24 not found"
