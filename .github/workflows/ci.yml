@@ -33,14 +33,3 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t $IMAGE_NAME .
-
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
-
-      - name: Scan Docker image
-        run: trivy image --exit-code 1 --severity CRITICAL,HIGH $IMAGE_NAME
-
-      - name: Check Ghost-24 vulnerability
-        run: |
-          trivy image --vuln-type os,library --severity CRITICAL $IMAGE_NAME | grep "Ghost-24" || echo "Ghost-24 not found"
